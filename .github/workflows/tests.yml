@@ -23,12 +23,11 @@ jobs:
             -workspace YourProject.xcworkspace \
             -scheme YourScheme \
             -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=15.0' \
-            -enableCodeCoverage YES \
-            | xcpretty
+            -resultBundlePath TestResults.xcresult
 
       - name: Generate code coverage report
         run: |
-          xcrun xccov view --report --json DerivedData/Build/Logs/Test/*.xcresult > coverage.json
+          xcrun xccov view --report --json TestResults.xcresult > coverage.json
           cat coverage.json
 
       - name: Upload code coverage report
