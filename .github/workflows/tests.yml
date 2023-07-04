@@ -21,5 +21,21 @@ jobs:
           xcodebuild clean build test \
             -project GitHubActionsTutorial.xcodeproj \
             -scheme GitHubActionsTutorial \
-            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 12' \
-            -enableCodeCoverage YES
+            -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=15.0'
+
+      - name: Collect test results
+        run: |
+          TEST_RESULT_DIR="$PWD/test_results"
+          mkdir "$TEST_RESULT_DIR"
+          find "$PWD" -type f -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
+
+      - name: Show test coverage summary
+        run: |
+          xcrun xccov view --report --json "$PWD/test_results/*.xcresult" > "$PWD/test_results/coverage.json"
+          cat "$PWD/test_results/coverage.json"
+
+      - name: Upload code coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage
+          path: ${{ github.workspace }}/test_results
