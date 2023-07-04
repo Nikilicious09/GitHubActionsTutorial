@@ -16,34 +16,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Cache Xcode build dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/Library/Caches/com.apple.dt.Xcode
-          key: ${{ runner.os }}-xcode-${{ hashFiles('**/*.xcodeproj') }}
+      - name: Build
+        run: swift build --build-tests
 
-      - name: Build and test
-        run: |
-          xcodebuild clean build test \
-            -project GitHubActionsTutorial.xcodeproj \
-            -scheme GitHubActionsTutorial \
-            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 12' \
-            -enableCodeCoverage YES \
-            | xcpretty
-
-      - name: Collect test results
-        run: |
-          TEST_RESULT_DIR="$PWD/test_results"
-          mkdir "$TEST_RESULT_DIR"
-          find "$PWD" -type f -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
-
-      - name: Show test coverage summary
-        run: |
-          xcrun xccov view --report --json "$PWD/test_results/*.xcresult" > "$PWD/test_results/coverage.json"
-          cat "$PWD/test_results/coverage.json"
-
-      - name: Upload code coverage
-        uses: actions/upload-artifact@v2
-        with:
-          name: code-coverage
-          path: ${{ github.workspace }}/test_results
+      - name: Run Tests
+        run: swift test --enable-code-coverage
