@@ -16,11 +16,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Install Bundler
-      run: |
-        sudo gem install bundler
-        bundle install
-
     - name: Build and Test
       run: |
         xcodebuild clean build test \
