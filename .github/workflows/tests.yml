@@ -12,7 +12,6 @@ jobs:
   tests:
     name: Run Unit Tests
     runs-on: macos-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -23,22 +22,12 @@ jobs:
           path: ~/Library/Caches/com.apple.dt.Xcode
           key: ${{ runner.os }}-xcode-${{ hashFiles('**/*.xcodeproj') }}
 
-      - name: Find available simulator
-        id: find_simulator
-        run: |
-          SIMULATOR=$(xcrun simctl list devices --json | jq -r '.devices | to_entries | .[] | .value | map(select(.availability == "available")) | .[0].udid')
-          if [ -z "$SIMULATOR" ]; then
-            echo "No available simulator found"
-            exit 1
-          fi
-          echo "::set-output name=device::$SIMULATOR"
-
       - name: Build and test
         run: |
           xcodebuild clean build test \
             -project GitHubActionsTutorial.xcodeproj \
             -scheme GitHubActionsTutorial \
-            -destination "id=${{ steps.find_simulator.outputs.device }}" \
+            -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=15.0' \
             -enableCodeCoverage YES \
             | xcpretty
 
@@ -49,14 +38,14 @@ jobs:
           find "$PWD" -type f -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
 
       - name: Show test coverage summary
-  run: |
-    RESULT_BUNDLE_PATH=$(find "$PWD/test_results" -name "*.xcresult" -type d | head -n 1)
-    if [ -z "$RESULT_BUNDLE_PATH" ]; then
-      echo "No result bundle found"
-      exit 1
-    fi
-    xcrun xccov view --report --json "$RESULT_BUNDLE_PATH" > "$PWD/test_results/coverage.json"
-    cat "$PWD/test_results/coverage.json"
+        run: |
+          RESULT_BUNDLE_PATH=$(find "$PWD/test_results" -name "*.xcresult" -type d | head -n 1)
+          if [ -z "$RESULT_BUNDLE_PATH" ]; then
+            echo "No result bundle found"
+            exit 1
+          fi
+          xcrun xccov view --report --json "$RESULT_BUNDLE_PATH" > "$PWD/test_results/coverage.json"
+          cat "$PWD/test_results/coverage.json"
 
       - name: Upload code coverage
         uses: actions/upload-artifact@v2
