@@ -20,8 +20,8 @@ jobs:
       - name: Build and test
         run: |
           xcodebuild clean build test \
-            -workspace YourProject.xcworkspace \
-            -scheme YourScheme \
+            -workspace GitHubActionsTutorial.xcworkspace \
+            -scheme GitHubActionsTutorial \
             -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=15.0' \
             -resultBundlePath TestResults.xcresult
 
