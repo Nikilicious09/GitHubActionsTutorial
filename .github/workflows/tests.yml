@@ -49,9 +49,14 @@ jobs:
           find "$PWD" -type f -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
 
       - name: Show test coverage summary
-        run: |
-          xcrun xccov view --report --json "$PWD/test_results/*.xcresult" > "$PWD/test_results/coverage.json"
-          cat "$PWD/test_results/coverage.json"
+  run: |
+    RESULT_BUNDLE_PATH=$(find "$PWD/test_results" -name "*.xcresult" -type d | head -n 1)
+    if [ -z "$RESULT_BUNDLE_PATH" ]; then
+      echo "No result bundle found"
+      exit 1
+    fi
+    xcrun xccov view --report --json "$RESULT_BUNDLE_PATH" > "$PWD/test_results/coverage.json"
+    cat "$PWD/test_results/coverage.json"
 
       - name: Upload code coverage
         uses: actions/upload-artifact@v2
