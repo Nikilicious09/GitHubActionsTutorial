@@ -19,8 +19,8 @@ jobs:
       - name: Build and test
         run: |
           xcodebuild clean build test \
-            -project YourProject.xcodeproj \
-            -scheme YourScheme \
+            -project GitHubActionsTutorial.xcodeproj \
+            -scheme GitHubActionsTutorial \
             -destination 'platform=iOS Simulator,OS=latest,name=iPhone 12' \
             | xcpretty
 
