@@ -26,7 +26,12 @@ jobs:
       - name: Find available simulator
         id: find_simulator
         run: |
-          xcrun simctl list devices --json | jq -r '.devices | to_entries | .[] | .value | map(select(.availability | contains("unavailable") | not)) | .[0].udid'
+          SIMULATOR=$(xcrun simctl list devices --json | jq -r '.devices | to_entries | .[] | .value | map(select(.availability == "available")) | .[0].udid')
+          if [ -z "$SIMULATOR" ]; then
+            echo "No available simulator found"
+            exit 1
+          fi
+          echo "::set-output name=device::$SIMULATOR"
 
       - name: Build and test
         run: |
