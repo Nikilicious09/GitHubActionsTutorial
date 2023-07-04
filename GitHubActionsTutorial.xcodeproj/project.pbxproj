@@ -16,6 +16,7 @@
 		849272072A54AE5C00B19813 /* GitHubActionsTutorialUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849272062A54AE5C00B19813 /* GitHubActionsTutorialUITestsLaunchTests.swift */; };
 		8492721C2A54AF3E00B19813 /* NVFlipCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8492721B2A54AF3E00B19813 /* NVFlipCardView.swift */; };
 		8492721E2A54AF6700B19813 /* NVFlipCardPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8492721D2A54AF6700B19813 /* NVFlipCardPresenter.swift */; };
+		849272202A54CC5400B19813 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8492721F2A54CC5400B19813 /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		849272062A54AE5C00B19813 /* GitHubActionsTutorialUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubActionsTutorialUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		8492721B2A54AF3E00B19813 /* NVFlipCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NVFlipCardView.swift; sourceTree = "<group>"; };
 		8492721D2A54AF6700B19813 /* NVFlipCardPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NVFlipCardPresenter.swift; sourceTree = "<group>"; };
+		8492721F2A54CC5400B19813 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +106,7 @@
 				8492721D2A54AF6700B19813 /* NVFlipCardPresenter.swift */,
 				849271ED2A54AE5C00B19813 /* Assets.xcassets */,
 				849271EF2A54AE5C00B19813 /* Preview Content */,
+				8492721F2A54CC5400B19813 /* main.swift */,
 			);
 			path = GitHubActionsTutorial;
 			sourceTree = "<group>";
@@ -264,6 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				849271EC2A54AE5A00B19813 /* ContentView.swift in Sources */,
+				849272202A54CC5400B19813 /* main.swift in Sources */,
 				8492721E2A54AF6700B19813 /* NVFlipCardPresenter.swift in Sources */,
 				8492721C2A54AF3E00B19813 /* NVFlipCardView.swift in Sources */,
 				849271EA2A54AE5A00B19813 /* GitHubActionsTutorialApp.swift in Sources */,
