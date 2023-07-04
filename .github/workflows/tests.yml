@@ -16,21 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build
-        run: swift build --build-tests
-
-      - name: Run Tests
-        run: swift test --enable-code-coverage
-
-      - name: Collect code coverage
+      - name: Build and test
         run: |
-          mkdir -p coverage
-          xcrun llvm-cov export -format="lcov" .build/debug/AppPackageTests.xctest/Contents/MacOS/AppPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage/coverage.info
-          lcov --remove coverage/coverage.info '*/Tests/*' -o coverage/coverage.info.cleaned
-          lcov --list coverage/coverage.info.cleaned
-
-      - name: Upload code coverage
-        uses: actions/upload-artifact@v2
-        with:
-          name: code-coverage
-          path: coverage
+          xcodebuild clean build test \
+            -project GitHubActionsTutorial.xcodeproj \
+            -scheme GitHubActionsTutorial \
+            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 12' \
+            -enableCodeCoverage YES
