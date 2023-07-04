@@ -35,7 +35,7 @@ jobs:
         run: |
           TEST_RESULT_DIR="$PWD/test_results"
           mkdir "$TEST_RESULT_DIR"
-          find "$PWD" -type f -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
+          find "$PWD" -type d -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
 
       - name: Show test coverage summary
         run: |
