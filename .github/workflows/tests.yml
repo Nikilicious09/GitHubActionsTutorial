@@ -27,7 +27,7 @@ jobs:
 
     - name: Generate Code Coverage Report
       run: |
-        xcrun xccov view --report --json "$(find . -name "*.xcresult")" > coverage.json
+        xcrun xccov view Build/Logs/Test/*.xccovreport --json >> coverage_report.json
 
     - name: Upload Code Coverage Artifact
       uses: actions/upload-artifact@v2
