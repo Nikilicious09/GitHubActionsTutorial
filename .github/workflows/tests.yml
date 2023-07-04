@@ -16,26 +16,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Cache Xcode build dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/Library/Caches/com.apple.dt.Xcode
-          key: ${{ runner.os }}-xcode-${{ hashFiles('GitHubActionsTutorial.xcodeproj') }}
+      - name: Install xcresulttool
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
       - name: Build and test
-        run: |
-          xcodebuild clean build test \
-            -project GitHubActionsTutorial.xcodeproj \
-            -scheme GitHubActionsTutorial \
-            -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=15.0' \
-            -enableCodeCoverage YES \
-            | xcpretty
+        run: xcodebuild clean build test \
+          -project GitHubActionsTutorial.xcodeproj \
+          -scheme GitHubActionsTutorial \
+          -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=15.0' \
+          -enableCodeCoverage YES \
+          | xcpretty
 
-      - name: Collect test results
+      - name: Fetch test results
         run: |
-          TEST_RESULT_DIR="$PWD/test_results"
-          mkdir "$TEST_RESULT_DIR"
-          find "$PWD" -type f -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
+          DERIVED_DATA=$(xcodebuild -showBuildSettings | grep -E " OBJROOT =| SYMROOT =" | awk '{print $NF}' | sed -e 's/^[[:space:]]*//')
+          TEST_RESULT_BUNDLE=$(find "$DERIVED_DATA" -type d -name "*.xcresult" -print0 | xargs -0 ls -t | head -n1)
+          mkdir -p "$PWD/test_results"
+          cp -R "$TEST_RESULT_BUNDLE" "$PWD/test_results/"
 
       - name: Show test coverage summary
         run: |
