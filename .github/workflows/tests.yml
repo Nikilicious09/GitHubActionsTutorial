@@ -1,37 +1,55 @@
-name: Unit Tests
+name: Tests
 
 on:
-  # Trigger the workflow on push pull request or manually
-  pull_request:
-    branches: [ main ]
-
   push:
-    branches: [ main ]
-
-  workflow_dispatch:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  run_tests:
-    name: Run tests and Get Code Coverage
+  tests:
+    name: Run Unit Tests
     runs-on: macos-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Run tests
-        run: swift test --enable-code-coverage
-
-      - name: Test coverage
-        uses: maxep/spm-lcov-action@0.3.1
+      - name: Cache Xcode build dependencies
+        uses: actions/cache@v2
         with:
-          output-file: ./coverage/lcov.info
+          path: ~/Library/Caches/com.apple.dt.Xcode
+          key: ${{ runner.os }}-xcode-${{ hashFiles('**/*.xcodeproj') }}
 
-      - name: Upload coverage to Codecov
-        if: ${{ github.event_name == 'push' }}
-        uses: codecov/codecov-action@v1
+      - name: Find available simulator
+        id: find_simulator
+        run: |
+          xcrun simctl list devices --json | jq -r '.devices | to_entries | .[] | .value | map(select(.availability | contains("unavailable") | not)) | .[0].udid'
+
+      - name: Build and test
+        run: |
+          xcodebuild clean build test \
+            -project GitHubActionsTutorial.xcodeproj \
+            -scheme GitHubActionsTutorial \
+            -destination "id=${{ steps.find_simulator.outputs.device }}" \
+            -enableCodeCoverage YES \
+            | xcpretty
+
+      - name: Collect test results
+        run: |
+          TEST_RESULT_DIR="$PWD/test_results"
+          mkdir "$TEST_RESULT_DIR"
+          find "$PWD" -type f -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
+
+      - name: Show test coverage summary
+        run: |
+          xcrun xccov view --report --json "$PWD/test_results/*.xcresult" > "$PWD/test_results/coverage.json"
+          cat "$PWD/test_results/coverage.json"
+
+      - name: Upload code coverage
+        uses: actions/upload-artifact@v2
         with:
-          file: ./coverage/lcov.info
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: unittests
-          env_vars: SWIFT
-          name: codecov-${{ github.head_ref }}-${{ steps.date.outputs.date }}
-          fail_ci_if_error: true
+          name: code-coverage
+          path: ${{ github.workspace }}/test_results
