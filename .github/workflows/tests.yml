@@ -22,6 +22,7 @@ jobs:
             -project GitHubActionsTutorial.xcodeproj \
             -scheme GitHubActionsTutorial \
             -destination 'platform=iOS Simulator,OS=latest,name=iPhone 12' \
+            -enableCodeCoverage YES \
             | xcpretty
 
       - name: Collect test results
@@ -29,3 +30,9 @@ jobs:
           TEST_RESULT_DIR="$PWD/test_results"
           mkdir "$TEST_RESULT_DIR"
           find "$PWD" -type f -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
+
+      - name: Upload code coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage
+          path: test_results
