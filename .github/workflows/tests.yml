@@ -1,4 +1,4 @@
-name: Tests
+name: iOS Unit Tests with Code Coverage
 
 on:
   push:
@@ -9,35 +9,38 @@ on:
       - main
 
 jobs:
-  tests:
-    name: Run Unit Tests
+  build:
     runs-on: macos-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-      - name: Cache Xcode build dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/Library/Caches/com.apple.dt.Xcode
-          key: ${{ runner.os }}-xcode-${{ hashFiles('**/*.xcodeproj') }}
+    - name: Set up Xcode
+      uses: actions/setup-xcode@v2
+      with:
+        xcode-version: '12.x'
 
-      - name: Build and test
-        run: xcodebuild clean build test -project GitHubActionsTutorial.xcodeproj -scheme GitHubActionsTutorial -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=15.0' -enableCodeCoverage YES | xcpretty
+    - name: Install Dependencies
+      run: |
+        sudo gem install bundler
+        bundle install
 
-      - name: Collect test results
-        run: |
-          TEST_RESULT_DIR="$PWD/test_results"
-          mkdir "$TEST_RESULT_DIR"
-          find "$PWD" -type d -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
+    - name: Build and Test
+      run: |
+        xcodebuild clean build test \
+          -project GitHubActionsTutorial.xcodeproj \
+          -scheme GitHubActionsTutorial \
+          -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=15.0' \
+          -enableCodeCoverage YES \
+          | xcpretty
 
-      - name: Show test coverage summary
-        run: |
-          xcrun xccov view --report --json "$PWD/test_results/ResultBundle_*.xcresult" > "$PWD/test_results/coverage.json"
-          cat "$PWD/test_results/coverage.json"
+    - name: Generate Code Coverage Report
+      run: |
+        xcrun xccov view --report --json "$(find . -name "*.xcresult")" > coverage.json
 
-      - name: Upload code coverage
-        uses: actions/upload-artifact@v2
-        with:
-          name: code-coverage
-          path: ${{ github.workspace }}/test_results
+    - name: Upload Code Coverage Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage
+        path: coverage.json
