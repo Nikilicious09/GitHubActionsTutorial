@@ -23,11 +23,6 @@ jobs:
           path: ~/Library/Caches/com.apple.dt.Xcode
           key: ${{ runner.os }}-xcode-${{ hashFiles('**/*.xcodeproj') }}
 
-      - name: Install CocoaPods dependencies
-        run: |
-          cd path/to/project
-          pod install
-
       - name: Build and test
         run: |
           xcodebuild clean build test \
