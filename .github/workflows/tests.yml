@@ -37,6 +37,11 @@ jobs:
           mkdir "$TEST_RESULT_DIR"
           find "$PWD" -type f -name "*.xcresult" -exec cp -R {} "$TEST_RESULT_DIR" \;
 
+      - name: Show test coverage summary
+        run: |
+          xcrun xccov view --report --json "$PWD/test_results/*.xcresult" > "$PWD/test_results/coverage.json"
+          cat "$PWD/test_results/coverage.json"
+
       - name: Upload code coverage
         uses: actions/upload-artifact@v2
         with:
